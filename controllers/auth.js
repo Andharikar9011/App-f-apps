@@ -3,7 +3,8 @@ const crypto = require("crypto");
 const uuid = require("uuid");
 const { expressjwt: expressJwt } = require("express-jwt");
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+// require("dotenv").config();
+const JWT_SECRET = "querty";
 // console.log(process.env);
 
 exports.signup = (req, res) => {
@@ -38,7 +39,7 @@ exports.signin = (req, res) => {
         .pbkdf2Sync(req.body.password, user.salt, 100, 32, "sha256")
         .toString("hex");
       if (hashed_pass == user.hashed) {
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, {
           expiresIn: "1h",
         });
         res.cookie("token", token);
@@ -51,7 +52,7 @@ exports.signin = (req, res) => {
 };
 
 exports.requiresignin = expressJwt({
-  secret: process.env.JWT_SECRET,
+  secret: JWT_SECRET,
   userProperty: "auth",
   algorithms: ["HS256"],
   getToken: (req) => {
